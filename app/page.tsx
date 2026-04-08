@@ -26,7 +26,7 @@ export default async function HomePage() {
         >
           {siteSettings.heroVideoUrl ? (
             <video
-              className="absolute inset-0 h-full w-full object-cover opacity-30"
+              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-30"
               src={siteSettings.heroVideoUrl}
               autoPlay
               muted
@@ -36,7 +36,7 @@ export default async function HomePage() {
           ) : null}
           {siteSettings.heroBackgroundImage ? (
             <div
-              className="pointer-events-none absolute inset-0 opacity-28"
+              className="pointer-events-none absolute inset-0 z-0 opacity-28"
               style={{
                 backgroundImage: `url(${siteSettings.heroBackgroundImage})`,
                 backgroundPosition: "center",
@@ -45,13 +45,13 @@ export default async function HomePage() {
             />
           ) : null}
           <div
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute inset-0 z-10"
             style={{
               backgroundImage: `radial-gradient(circle at 20% 75%, ${siteSettings.heroGlowColor}, transparent 20%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 18%)`,
             }}
           />
 
-          <div className="mx-auto flex w-full max-w-[1720px] items-start justify-between gap-4 p-4 sm:p-6">
+          <div className="relative z-20 mx-auto flex w-full max-w-[1720px] items-start justify-between gap-4 p-4 sm:p-6">
             <Link
               href="/"
               className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/14 bg-[#0f1720] text-sm font-semibold tracking-[-0.04em] text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
@@ -104,7 +104,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-[1720px] flex-col justify-start p-4 pt-6 sm:p-6 sm:pt-10 lg:min-h-[calc(100vh-9rem)] lg:justify-end lg:p-10">
+          <div className="relative z-20 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-[1720px] flex-col justify-start p-4 pt-6 sm:p-6 sm:pt-10 lg:min-h-[calc(100vh-9rem)] lg:justify-end lg:p-10">
             <div className="grid items-end gap-8 xl:grid-cols-[420px_1fr] xl:gap-14">
               <div className="order-1 w-full max-w-[26rem] xl:order-1">
                 <UploadPreview
