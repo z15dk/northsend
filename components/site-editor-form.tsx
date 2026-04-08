@@ -71,6 +71,20 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
           </div>
 
           <div className="space-y-2">
+            <label className="text-sm font-medium text-ink" htmlFor="heroMobileTitle">
+              Mobil headline
+            </label>
+            <textarea
+              id="heroMobileTitle"
+              name="heroMobileTitle"
+              rows={2}
+              value={values.heroMobileTitle}
+              onChange={(event) => setValues((current) => ({ ...current, heroMobileTitle: event.target.value }))}
+              className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
+            />
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium text-ink" htmlFor="heroDescription">
               Beskrivelse
             </label>
@@ -85,6 +99,22 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
           </div>
 
           <div className="space-y-2">
+            <label className="text-sm font-medium text-ink" htmlFor="heroMobileDescription">
+              Mobil beskrivelse
+            </label>
+            <textarea
+              id="heroMobileDescription"
+              name="heroMobileDescription"
+              rows={3}
+              value={values.heroMobileDescription}
+              onChange={(event) =>
+                setValues((current) => ({ ...current, heroMobileDescription: event.target.value }))
+              }
+              className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
+            />
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium text-ink" htmlFor="heroTrust">
               Trust-linje
             </label>
@@ -94,6 +124,19 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
               rows={2}
               value={values.heroTrust}
               onChange={(event) => setValues((current) => ({ ...current, heroTrust: event.target.value }))}
+              className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-ink" htmlFor="heroSocialProof">
+              Badges / social proof
+            </label>
+            <input
+              id="heroSocialProof"
+              name="heroSocialProof"
+              value={values.heroSocialProof}
+              onChange={(event) => setValues((current) => ({ ...current, heroSocialProof: event.target.value }))}
               className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
             />
           </div>
@@ -180,8 +223,33 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-black/5 bg-sand/50 p-4 text-sm text-ink/65">
-            Fedt at have med senere: baggrundsbillede, hero-video, badges/social proof, og separate mobil-tekster.
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-ink" htmlFor="heroBackgroundImage">
+                Baggrundsbillede URL
+              </label>
+              <input
+                id="heroBackgroundImage"
+                name="heroBackgroundImage"
+                value={values.heroBackgroundImage}
+                onChange={(event) =>
+                  setValues((current) => ({ ...current, heroBackgroundImage: event.target.value }))
+                }
+                className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-ink" htmlFor="heroVideoUrl">
+                Hero-video URL
+              </label>
+              <input
+                id="heroVideoUrl"
+                name="heroVideoUrl"
+                value={values.heroVideoUrl}
+                onChange={(event) => setValues((current) => ({ ...current, heroVideoUrl: event.target.value }))}
+                className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
+              />
+            </div>
           </div>
 
           {state.error ? <p className="text-sm text-red-700">{state.error}</p> : null}
@@ -195,13 +263,27 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
           <div
             className="relative min-h-[28rem] p-5 text-white"
             style={{
-              backgroundImage: `radial-gradient(circle at 20% 75%, ${values.heroGlowColor}, transparent 22%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 18%)`,
+              backgroundImage: `${values.heroBackgroundImage ? `linear-gradient(rgba(5,5,5,0.34), rgba(5,5,5,0.52)), url(${values.heroBackgroundImage}),` : ""} radial-gradient(circle at 20% 75%, ${values.heroGlowColor}, transparent 22%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 18%)`,
+              backgroundSize: values.heroBackgroundImage ? "cover, auto, auto" : undefined,
+              backgroundPosition: values.heroBackgroundImage ? "center, center, center" : undefined,
             }}
           >
+            {values.heroVideoUrl ? (
+              <video
+                className="absolute inset-0 h-full w-full object-cover opacity-30"
+                src={values.heroVideoUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : null}
             <div className="max-w-md pt-24">
               <p className="text-[11px] uppercase tracking-[0.28em] text-white/55">{values.heroBadge}</p>
-              <h2 className="mt-4 text-5xl font-semibold tracking-[-0.065em] leading-[0.92]">{values.heroTitle}</h2>
-              <p className="mt-4 text-sm leading-7 text-white/68">{values.heroDescription}</p>
+              <h2 className="mt-4 hidden text-5xl font-semibold tracking-[-0.065em] leading-[0.92] sm:block">{values.heroTitle}</h2>
+              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.065em] leading-[0.94] sm:hidden">{values.heroMobileTitle}</h2>
+              <p className="mt-4 hidden text-sm leading-7 text-white/68 sm:block">{values.heroDescription}</p>
+              <p className="mt-4 text-sm leading-7 text-white/68 sm:hidden">{values.heroMobileDescription}</p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <div className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-medium text-black">
                   {values.heroPrimaryCtaLabel}
@@ -211,6 +293,7 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
                 </div>
               </div>
               <p className="mt-6 text-sm leading-6 text-white/46">{values.heroTrust}</p>
+              <p className="mt-3 text-sm leading-6 text-white/34">{values.heroSocialProof}</p>
             </div>
           </div>
         </div>

@@ -137,13 +137,18 @@ model SiteSetting {
   id                    String   @id
   heroBadge             String
   heroTitle             String
+  heroMobileTitle       String?
   heroDescription       String
+  heroMobileDescription String?
   heroTrust             String
+  heroSocialProof       String?
   heroPrimaryCtaLabel   String
   heroSecondaryCtaLabel String
   heroBackgroundFrom    String
   heroBackgroundTo      String
   heroGlowColor         String
+  heroBackgroundImage   String?
+  heroVideoUrl          String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 }

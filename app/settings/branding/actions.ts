@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SITE_SETTINGS_ID } from "@/lib/site-settings";
 
@@ -18,17 +17,20 @@ export async function saveSiteSettingsAction(
   _: SiteEditorActionState,
   formData: FormData,
 ): Promise<SiteEditorActionState> {
-  await requireUser();
-
   const heroBadge = readValue(formData, "heroBadge");
   const heroTitle = readValue(formData, "heroTitle");
+  const heroMobileTitle = readValue(formData, "heroMobileTitle");
   const heroDescription = readValue(formData, "heroDescription");
+  const heroMobileDescription = readValue(formData, "heroMobileDescription");
   const heroTrust = readValue(formData, "heroTrust");
+  const heroSocialProof = readValue(formData, "heroSocialProof");
   const heroPrimaryCtaLabel = readValue(formData, "heroPrimaryCtaLabel");
   const heroSecondaryCtaLabel = readValue(formData, "heroSecondaryCtaLabel");
   const heroBackgroundFrom = readValue(formData, "heroBackgroundFrom");
   const heroBackgroundTo = readValue(formData, "heroBackgroundTo");
   const heroGlowColor = readValue(formData, "heroGlowColor");
+  const heroBackgroundImage = readValue(formData, "heroBackgroundImage");
+  const heroVideoUrl = readValue(formData, "heroVideoUrl");
 
   if (!heroTitle || !heroDescription || !heroPrimaryCtaLabel || !heroSecondaryCtaLabel) {
     return { error: "Udfyld hero-tekst og begge CTA-felter." };
@@ -40,28 +42,39 @@ export async function saveSiteSettingsAction(
       id: SITE_SETTINGS_ID,
       heroBadge,
       heroTitle,
+      heroMobileTitle,
       heroDescription,
+      heroMobileDescription,
       heroTrust,
+      heroSocialProof,
       heroPrimaryCtaLabel,
       heroSecondaryCtaLabel,
       heroBackgroundFrom,
       heroBackgroundTo,
       heroGlowColor,
+      heroBackgroundImage,
+      heroVideoUrl,
     },
     update: {
       heroBadge,
       heroTitle,
+      heroMobileTitle,
       heroDescription,
+      heroMobileDescription,
       heroTrust,
+      heroSocialProof,
       heroPrimaryCtaLabel,
       heroSecondaryCtaLabel,
       heroBackgroundFrom,
       heroBackgroundTo,
       heroGlowColor,
+      heroBackgroundImage,
+      heroVideoUrl,
     },
   });
 
   revalidatePath("/");
+  revalidatePath("/hero-editor");
   revalidatePath("/settings/branding");
 
   return { success: "Hero-sektionen er opdateret." };

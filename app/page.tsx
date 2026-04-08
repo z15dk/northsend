@@ -24,6 +24,26 @@ export default async function HomePage() {
             background: `linear-gradient(135deg, ${siteSettings.heroBackgroundFrom}, ${siteSettings.heroBackgroundTo})`,
           }}
         >
+          {siteSettings.heroVideoUrl ? (
+            <video
+              className="absolute inset-0 h-full w-full object-cover opacity-30"
+              src={siteSettings.heroVideoUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : null}
+          {siteSettings.heroBackgroundImage ? (
+            <div
+              className="pointer-events-none absolute inset-0 opacity-28"
+              style={{
+                backgroundImage: `url(${siteSettings.heroBackgroundImage})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }}
+            />
+          ) : null}
           <div
             className="pointer-events-none absolute inset-0"
             style={{
@@ -101,11 +121,17 @@ export default async function HomePage() {
                   <p className="text-[11px] uppercase tracking-[0.28em] text-white/55 sm:text-xs">
                     {siteSettings.heroBadge}
                   </p>
-                  <h1 className="mt-4 max-w-[11ch] text-4xl font-semibold tracking-[-0.065em] text-white sm:text-6xl xl:text-[5.4rem] xl:leading-[0.92]">
+                  <h1 className="mt-4 hidden max-w-[11ch] text-4xl font-semibold tracking-[-0.065em] text-white sm:block sm:text-6xl xl:text-[5.4rem] xl:leading-[0.92]">
                     {siteSettings.heroTitle}
                   </h1>
-                  <p className="mt-4 max-w-xl text-sm leading-7 text-white/68 sm:text-base">
+                  <h1 className="mt-4 max-w-[12ch] text-4xl font-semibold tracking-[-0.065em] text-white sm:hidden">
+                    {siteSettings.heroMobileTitle}
+                  </h1>
+                  <p className="mt-4 hidden max-w-xl text-sm leading-7 text-white/68 sm:block sm:text-base">
                     {siteSettings.heroDescription}
+                  </p>
+                  <p className="mt-4 max-w-xl text-sm leading-7 text-white/68 sm:hidden">
+                    {siteSettings.heroMobileDescription}
                   </p>
 
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -125,6 +151,9 @@ export default async function HomePage() {
 
                   <p className="mt-6 max-w-lg text-sm leading-6 text-white/46">
                     {siteSettings.heroTrust}
+                  </p>
+                  <p className="mt-3 max-w-lg text-sm leading-6 text-white/32">
+                    {siteSettings.heroSocialProof}
                   </p>
                 </div>
               </div>
