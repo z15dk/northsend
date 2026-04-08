@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  INCOMPLETE
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+}
+
+enum TransferStatus {
+  UPLOADING
+  AVAILABLE
+  EXPIRED
+  DELETING
+  DELETED
+}
+
+enum TransferEventType {
+  CREATED
+  DOWNLOADED
+  EXPIRED
+  DELETED
+}
+
+model User {
+  id              String              @id @default(cuid())
+  email           String              @unique
+  passwordHash    String?
+  name            String?
+  planCode        String              @default("free")
+  role            UserRole            @default(USER)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  subscriptions   Subscription[]
+  transfers       Transfer[]
+  whiteLabel      WhiteLabelSetting?
+}
+
+model Plan {
+  id                 String         @id @default(cuid())
+  code               String         @unique
+  name               String
+  maxUploadBytes     BigInt
+  retentionHours     Int
+  whiteLabelEnabled  Boolean        @default(false)
+  monthlyPriceCents  Int
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  subscriptions      Subscription[]
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  planId               String
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  status               SubscriptionStatus @default(INCOMPLETE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                 Plan               @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status])
+}
+
+model Transfer {
+  id             String          @id @default(cuid())
+  userId         String?
+  planSnapshot   String
+  status         TransferStatus  @default(UPLOADING)
+  downloadToken  String          @unique
+  totalSizeBytes BigInt
+  fileCount      Int
+  expiresAt      DateTime
+  downloadCount  Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  user           User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  files          File[]
+  events         TransferEvent[]
+
+  @@index([userId, createdAt])
+  @@index([expiresAt, status])
+}
+
+model File {
+  id           String    @id @default(cuid())
+  transferId   String
+  originalName String
+  storageKey   String    @unique
+  mimeType     String?
+  sizeBytes    BigInt
+  checksum     String?
+  createdAt    DateTime  @default(now())
+  transfer     Transfer  @relation(fields: [transferId], references: [id], onDelete: Cascade)
+
+  @@index([transferId])
+}
+
+model WhiteLabelSetting {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  brandName         String
+  brandSlug         String   @unique
+  logoFileKey       String?
+  primaryColor      String?
+  backgroundColor   String?
+  headline          String?
+  subheadline       String?
+  embedEnabled      Boolean  @default(true)
+  hostedPageEnabled Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TransferEvent {
+  id         String            @id @default(cuid())
+  transferId String
+  eventType  TransferEventType
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime          @default(now())
+  transfer   Transfer          @relation(fields: [transferId], references: [id], onDelete: Cascade)
+
+  @@index([transferId, createdAt])
+}

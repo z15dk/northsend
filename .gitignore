@@ -1,0 +1,7 @@
+.next
+.next-stale-20260408-0047
+node_modules
+.env
+dist
+coverage
+.DS_Store

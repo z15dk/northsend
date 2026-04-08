@@ -1,0 +1,350 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState, type FormEvent } from "react";
+import { copy as i18nCopy, type Locale } from "@/lib/copy";
+import { formatBytes } from "@/lib/plans";
+import { cn } from "@/lib/utils";
+
+type TransferUploaderProps = {
+  currentPlanName: string;
+  currentPlanLimit: string;
+  currentRetention: string;
+  locale: Locale;
+  variant?: "hero" | "page";
+};
+
+export function TransferUploader({
+  currentPlanName,
+  currentPlanLimit,
+  currentRetention,
+  locale,
+  variant = "page",
+}: TransferUploaderProps) {
+  const copy = i18nCopy[locale].uploader;
+  const [files, setFiles] = useState<File[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [downloadPath, setDownloadPath] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const totalSizeBytes = useMemo(() => files.reduce((sum, file) => sum + file.size, 0), [files]);
+  const totalSizeLabel = useMemo(() => formatBytes(totalSizeBytes), [totalSizeBytes]);
+  const isHero = variant === "hero";
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!files.length) {
+      setError(copy.chooseBeforeContinue);
+      setSuccess(null);
+      setDownloadPath(null);
+      return;
+    }
+
+    setIsUploading(true);
+    setError(null);
+    setSuccess(null);
+    setDownloadPath(null);
+
+    try {
+      const createResponse = await fetch("/api/transfers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          files: files.map((file) => ({
+            name: file.name,
+            size: file.size,
+            type: file.type || "application/octet-stream",
+          })),
+        }),
+      });
+
+      const createData = (await createResponse.json()) as
+        | { error: string }
+        | {
+            transferId: string;
+            uploads: Array<{
+              index: number;
+              fileId: string;
+              name: string;
+              uploadUrl: string;
+              contentType: string;
+            }>;
+          };
+
+      if (!createResponse.ok || !("uploads" in createData)) {
+        throw new Error("error" in createData ? createData.error : "Failed to create transfer.");
+      }
+
+      const uploadedFileIds: string[] = [];
+
+      for (const upload of createData.uploads) {
+        const browserFile = files[upload.index];
+
+        if (!browserFile) {
+          throw new Error(`Missing local file for ${upload.name}.`);
+        }
+
+        const uploadResponse = await fetch(upload.uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": upload.contentType,
+          },
+          body: browserFile,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed for ${upload.name}.`);
+        }
+
+        uploadedFileIds.push(upload.fileId);
+      }
+
+      const completeResponse = await fetch(`/api/transfers/${createData.transferId}/complete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uploadedFileIds }),
+      });
+
+      const completeData = (await completeResponse.json()) as
+        | { error: string }
+        | { downloadPath: string };
+
+      if (!completeResponse.ok || !("downloadPath" in completeData)) {
+        throw new Error("error" in completeData ? completeData.error : "Failed to finalize transfer.");
+      }
+
+      setSuccess(copy.uploadSuccess);
+      setDownloadPath(completeData.downloadPath);
+      setFiles([]);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "Upload failed.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-[2.5rem] border border-black/5 bg-white/88 shadow-card",
+        isHero ? "p-4" : "p-6",
+      )}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,#dfe9e4_0%,transparent_38%),radial-gradient(circle_at_bottom_right,#efe4d5_0%,transparent_34%)]" />
+      <div
+        className={cn(
+          "relative rounded-[2rem] border border-black/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(247,243,235,0.92)_100%)]",
+          isHero ? "p-6 md:p-8" : "p-6",
+        )}
+      >
+        {isHero ? (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pine text-xs font-semibold uppercase tracking-[0.16em] text-white">
+                {copy.send}
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.16em] text-ink/60">
+                <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentPlanName}</span>
+                <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentPlanLimit}</span>
+                <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentRetention}</span>
+              </div>
+            </div>
+
+            <label
+              htmlFor={`files-${variant}`}
+              className="block cursor-pointer rounded-[2rem] border border-dashed border-pine/25 bg-white/82 px-7 py-10 transition hover:border-pine/35 hover:bg-white"
+            >
+              <p className="text-sm uppercase tracking-[0.24em] text-pine">{copy.uploadZone}</p>
+              <h3 className="mt-4 max-w-md text-4xl font-semibold tracking-tight text-ink md:text-5xl">
+                {copy.title}
+              </h3>
+              <p className="mt-4 max-w-lg text-sm leading-7 text-ink/65">
+                {copy.description}
+              </p>
+
+              <div className="mt-10 flex flex-wrap gap-3 text-sm">
+                <span className="rounded-full border border-black/8 bg-cloud/70 px-4 py-2 text-ink/75">
+                  {files.length > 0 ? copy.selectedFiles(files.length) : copy.clickToChoose}
+                </span>
+                <span className="rounded-full border border-black/8 bg-cloud/70 px-4 py-2 text-ink/75">
+                  {files.length > 0 ? copy.totalSize(totalSizeLabel) : copy.dragHint}
+                </span>
+              </div>
+
+              <input
+                id={`files-${variant}`}
+                type="file"
+                multiple
+                className="sr-only"
+                onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
+              />
+
+              <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-black/6 pt-6">
+                <div className="grid gap-3 text-sm text-ink/72 md:grid-cols-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.transferLimit}</p>
+                    <p className="mt-1 font-medium text-ink">{currentPlanLimit}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.retention}</p>
+                    <p className="mt-1 font-medium text-ink">{currentRetention}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.whiteLabel}</p>
+                    <p className="mt-1 font-medium text-ink">
+                      {currentPlanName === "Pro" ? copy.included : copy.upgradeRequired}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={isUploading}
+                  className="shrink-0 rounded-full bg-pine px-6 py-3 text-sm font-medium text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isUploading ? copy.uploading : copy.uploadTransfer}
+                </button>
+              </div>
+            </label>
+
+            {files.length > 0 ? (
+              <div className="space-y-2">
+                {files.slice(0, 3).map((file) => (
+                  <div
+                    key={`${file.name}-${file.size}-${file.lastModified}`}
+                    className="flex items-center justify-between rounded-2xl bg-white/90 px-4 py-3 text-sm"
+                  >
+                    <span className="truncate pr-4 text-ink">{file.name}</span>
+                    <span className="whitespace-nowrap text-ink/60">{formatBytes(file.size)}</span>
+                  </div>
+                ))}
+                {files.length > 3 ? <p className="text-sm text-ink/55">{copy.moreFiles(files.length - 3)}</p> : null}
+              </div>
+            ) : null}
+
+            {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {success ? (
+              <div className="rounded-2xl bg-pine px-4 py-4 text-sm text-white">
+                <p>{success}</p>
+                {downloadPath ? (
+                  <p className="mt-2">
+                    <Link href={downloadPath} className="font-medium text-white underline underline-offset-4">
+                      {copy.openDownloadPage}
+                    </Link>
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_18rem]">
+            <div className="rounded-[1.75rem] border border-dashed border-pine/25 bg-white/70 p-8">
+              <div className="flex justify-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pine text-xs font-semibold uppercase tracking-[0.16em] text-white">
+                  {copy.send}
+                </div>
+              </div>
+
+              <div className="mt-7 text-center">
+                <p className="text-sm uppercase tracking-[0.24em] text-pine">{copy.uploadZone}</p>
+                <h3 className="mt-4 text-2xl font-semibold tracking-tight text-ink">{copy.title}</h3>
+                <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink/65">
+                  {copy.description}
+                </p>
+              </div>
+
+              <label
+                htmlFor={`files-${variant}`}
+                className="mt-8 block cursor-pointer rounded-[1.5rem] border border-black/8 bg-cloud/70 p-6 transition hover:border-pine/30 hover:bg-white"
+              >
+                <span className="block text-base font-medium text-ink">
+                  {files.length > 0 ? copy.selectedFiles(files.length) : copy.chooseFiles}
+                </span>
+                <span className="mt-2 block text-sm text-ink/60">
+                  {files.length > 0 ? copy.totalSize(totalSizeLabel) : copy.dragHint}
+                </span>
+                <input
+                  id={`files-${variant}`}
+                  type="file"
+                  multiple
+                  className="sr-only"
+                  onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
+                />
+              </label>
+
+              {files.length > 0 ? (
+                <div className="mt-4 space-y-2">
+                  {files.slice(0, 5).map((file) => (
+                    <div
+                      key={`${file.name}-${file.size}-${file.lastModified}`}
+                      className="flex items-center justify-between rounded-2xl bg-white/90 px-4 py-3 text-sm"
+                    >
+                      <span className="truncate pr-4 text-ink">{file.name}</span>
+                      <span className="whitespace-nowrap text-ink/60">{formatBytes(file.size)}</span>
+                    </div>
+                  ))}
+                  {files.length > 5 ? <p className="text-sm text-ink/55">{copy.moreFiles(files.length - 5)}</p> : null}
+                </div>
+              ) : null}
+
+              {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
+              {success ? (
+                <div className="mt-4 rounded-2xl bg-pine px-4 py-4 text-sm text-white">
+                  <p>{success}</p>
+                  {downloadPath ? (
+                    <p className="mt-2">
+                      <Link href={downloadPath} className="font-medium text-white underline underline-offset-4">
+                        {copy.openDownloadPage}
+                      </Link>
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <aside className="flex flex-col justify-between rounded-[1.75rem] border border-black/6 bg-white/78 p-5">
+              <div>
+                <p className="text-sm uppercase tracking-[0.2em] text-pine">{locale === "da" ? "Nuværende regler" : "Current rules"}</p>
+                <h4 className="mt-4 text-2xl font-semibold tracking-tight text-ink">{currentPlanName} plan</h4>
+                <dl className="mt-5 space-y-4 text-sm text-ink/75">
+                  <div className="border-t border-black/5 pt-4">
+                    <dt>{copy.transferLimit}</dt>
+                    <dd className="mt-1 font-medium text-ink">{currentPlanLimit}</dd>
+                  </div>
+                  <div className="border-t border-black/5 pt-4">
+                    <dt>{copy.retention}</dt>
+                    <dd className="mt-1 font-medium text-ink">{currentRetention}</dd>
+                  </div>
+                  <div className="border-t border-black/5 pt-4">
+                    <dt>{copy.whiteLabel}</dt>
+                    <dd className="mt-1 font-medium text-ink">
+                      {currentPlanName === "Pro" ? copy.included : copy.upgradeRequired}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <button
+                  type="submit"
+                  disabled={isUploading}
+                  className="w-full rounded-full bg-pine px-5 py-3 text-sm font-medium text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isUploading ? copy.uploading : copy.uploadTransfer}
+                </button>
+                <p className="text-sm text-ink/55">
+                  {copy.guestsHint}
+                </p>
+              </div>
+            </aside>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
