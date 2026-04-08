@@ -14,6 +14,7 @@ export default async function HomePage() {
   const plan = getPlanDefinition(user?.planCode ?? "free");
   const plans = getMarketingPlans(locale);
   const siteSettings = await getSiteSettings(locale);
+  const hasHeroMedia = Boolean(siteSettings.heroBackgroundImage || siteSettings.heroVideoUrl);
 
   return (
     <div className="bg-[#090909]">
@@ -117,7 +118,13 @@ export default async function HomePage() {
               </div>
 
               <div className="order-2 flex flex-col justify-end xl:order-2">
-                <div className="max-w-2xl xl:ml-auto xl:max-w-[34rem]">
+                <div
+                  className={
+                    hasHeroMedia
+                      ? "max-w-2xl rounded-[2rem] border border-white/12 bg-black/36 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-md xl:ml-auto xl:max-w-[34rem] xl:p-8"
+                      : "max-w-2xl xl:ml-auto xl:max-w-[34rem]"
+                  }
+                >
                   <p className="text-[11px] uppercase tracking-[0.28em] text-white/55 sm:text-xs">
                     {siteSettings.heroBadge}
                   </p>

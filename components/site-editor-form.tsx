@@ -249,6 +249,9 @@ export function SiteEditorForm({ initialValues }: { initialValues: SiteSettingsV
                 onChange={(event) => setValues((current) => ({ ...current, heroVideoUrl: event.target.value }))}
                 className="w-full rounded-2xl border border-black/10 bg-cloud px-4 py-3 outline-none transition focus:border-pine"
               />
+              <p className="text-sm leading-6 text-ink/55">
+                Brug en direkte videofil som `.mp4` eller `.webm`. Et almindeligt YouTube-link virker ikke i det her felt.
+              </p>
             </div>
           </div>
 
