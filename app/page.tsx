@@ -17,9 +17,9 @@ export default async function HomePage() {
 
   return (
     <div className="bg-[#090909]">
-      <section className="mx-auto min-h-screen max-w-[1600px] px-3 py-3 sm:px-4 sm:py-4">
+      <section className="min-h-screen">
         <div
-          className="relative min-h-[calc(100vh-1.5rem)] overflow-hidden rounded-[2rem] shadow-[0_30px_120px_rgba(0,0,0,0.45)] sm:min-h-[calc(100vh-2rem)] sm:rounded-[2.5rem]"
+          className="relative min-h-screen overflow-hidden shadow-[0_30px_120px_rgba(0,0,0,0.45)]"
           style={{
             background: `linear-gradient(135deg, ${siteSettings.heroBackgroundFrom}, ${siteSettings.heroBackgroundTo})`,
           }}
@@ -31,7 +31,7 @@ export default async function HomePage() {
             }}
           />
 
-          <div className="relative flex items-start justify-between gap-4 p-4 sm:p-6">
+          <div className="mx-auto flex w-full max-w-[1720px] items-start justify-between gap-4 p-4 sm:p-6">
             <Link
               href="/"
               className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/14 bg-[#0f1720] text-sm font-semibold tracking-[-0.04em] text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
@@ -84,7 +84,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative flex min-h-[calc(100vh-7rem)] flex-col justify-start p-4 pt-6 sm:p-6 sm:pt-10 lg:min-h-[calc(100vh-9rem)] lg:justify-end lg:p-10">
+          <div className="mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-[1720px] flex-col justify-start p-4 pt-6 sm:p-6 sm:pt-10 lg:min-h-[calc(100vh-9rem)] lg:justify-end lg:p-10">
             <div className="grid items-end gap-8 xl:grid-cols-[420px_1fr] xl:gap-14">
               <div className="order-1 w-full max-w-[26rem] xl:order-1">
                 <UploadPreview

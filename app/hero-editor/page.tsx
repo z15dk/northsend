@@ -1,10 +1,8 @@
 import { SiteEditorForm } from "@/components/site-editor-form";
-import { requireUser } from "@/lib/auth";
 import { getLocale } from "@/lib/i18n";
 import { getSiteSettings } from "@/lib/site-settings";
 
 export default async function HeroEditorPage() {
-  await requireUser();
   const locale = await getLocale();
   const siteSettings = await getSiteSettings(locale);
 
