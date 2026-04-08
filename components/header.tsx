@@ -16,12 +16,12 @@ export async function Header() {
 
   return (
     <HeaderShell>
-      <header className="mx-auto mt-4 max-w-5xl rounded-full border border-black/5 bg-cloud/90 shadow-card backdrop-blur">
-        <div className="flex items-center justify-between px-6 py-4">
-          <Link href="/" className="text-lg font-semibold tracking-tight text-ink">
+      <header className="mx-auto mt-3 max-w-5xl rounded-[1.4rem] border border-black/5 bg-cloud/92 shadow-card backdrop-blur sm:mt-4 sm:rounded-full">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+          <Link href="/" className="text-base font-semibold tracking-tight text-ink sm:text-lg">
             {copy.brand}
           </Link>
-          <nav className="flex items-center gap-6 text-sm text-ink/75">
+          <nav className="hidden items-center gap-6 text-sm text-ink/75 sm:flex">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} className="transition hover:text-ink">
                 {item.label}
@@ -43,6 +43,20 @@ export async function Header() {
               </Link>
             )}
           </nav>
+          <div className="flex items-center gap-2 sm:hidden">
+            <Link
+              href="/upload"
+              className="inline-flex items-center justify-center rounded-full border border-black/8 bg-white/88 px-3 py-2 text-xs font-medium text-ink"
+            >
+              {copy.nav.upload}
+            </Link>
+            <Link
+              href={user ? "/dashboard" : "/signup"}
+              className="inline-flex items-center justify-center rounded-full bg-pine px-3 py-2 text-xs font-medium text-white"
+            >
+              {user ? copy.nav.dashboard : copy.nav.startFree}
+            </Link>
+          </div>
         </div>
       </header>
     </HeaderShell>
