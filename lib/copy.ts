@@ -24,13 +24,13 @@ export const copy = {
       primaryCta: "Start upload",
       secondaryCta: "Create free account",
       limitsEyebrow: "Simple limits",
-      limitsTitle: "Let people try it fast, then give them a reason to upgrade.",
+      limitsTitle: "Pricing built to convert first and expand account value later.",
       limitsDescription:
-        "Guests can send right away. Free accounts unlock more capacity. Paid plans unlock branded delivery for business use.",
+        "Start with a free plan that gets people moving fast. Upgrade the businesses that need more storage, longer retention, and better visibility.",
       scrollEyebrow: "Why it converts",
-      scrollTitle: "Built to feel simple on the surface and valuable underneath.",
+      scrollTitle: "Make the first transfer feel effortless and the paid value obvious.",
       scrollDescription:
-        "The first screen stays focused on action. The rest of the page explains the upgrade path without slowing anyone down.",
+        "The homepage leads with action. The sections below do the selling once people already trust the flow.",
       features: [
         {
           title: "Instant first use",
@@ -46,9 +46,9 @@ export const copy = {
         },
       ],
       whiteLabelEyebrow: "White-label",
-      whiteLabelTitle: "Turn the same upload flow into a branded client experience.",
+      whiteLabelTitle: "Turn the same transfer flow into a stronger client-facing experience.",
       whiteLabelDescription:
-        "Paying customers can add their own brand, keep the simple flow, and embed the uploader on their own site.",
+        "Paying customers can deliver files with more confidence, more control, and a cleaner business presentation.",
       whiteLabelCta: "Preview branding flow",
     },
     plans: {
@@ -56,9 +56,9 @@ export const copy = {
       free: { name: "Free account", description: "Create an account and get 72 hours retention." },
       pro: { name: "Pro", description: "Longer retention and white-label for businesses." },
       pricingEyebrow: "Pricing",
-      pricingTitle: "Three clear steps from trial to business use.",
+      pricingTitle: "Plans that make the first yes easy and the upgrade obvious.",
       pricingDescription:
-        "Let guests try it, turn free users into leads, and sell bigger limits plus white-label to paying customers.",
+        "Use the free plan to win signups. Use Pro Light and Pro to monetize businesses that need more storage, visibility, and control.",
       perTransfer: "Per transfer",
       retention: "Retention",
     },
@@ -174,13 +174,13 @@ export const copy = {
       primaryCta: "Start upload",
       secondaryCta: "Opret gratis konto",
       limitsEyebrow: "Enkle grænser",
-      limitsTitle: "Lad folk prøve hurtigt, og giv dem derefter en grund til at opgradere.",
+      limitsTitle: "Priser bygget til at konvertere hurtigt og øge værdien bagefter.",
       limitsDescription:
-        "Gæster kan sende med det samme. Gratis konti låser op for mere kapacitet. Betalte planer låser op for branded levering til virksomheder.",
+        "Start med en gratis plan der får folk hurtigt i gang. Opgrader de virksomheder der har brug for mere storage, længere lagring og mere indsigt.",
       scrollEyebrow: "Hvorfor den konverterer",
-      scrollTitle: "Bygget til at føles enkelt på overfladen og værdifuldt nedenunder.",
+      scrollTitle: "Gør første transfer enkel og den betalte værdi tydelig.",
       scrollDescription:
-        "Første skærm fokuserer på handling. Resten af siden forklarer opgraderingsvejen uden at bremse nogen.",
+        "Forsiden starter med handling. Sektionerne længere nede gør salgsarbejdet, når brugeren allerede stoler på flowet.",
       features: [
         {
           title: "Brug det med det samme",
@@ -196,9 +196,9 @@ export const copy = {
         },
       ],
       whiteLabelEyebrow: "White-label",
-      whiteLabelTitle: "Gør det samme upload-flow til en branded kundeoplevelse.",
+      whiteLabelTitle: "Gør det samme transfer-flow til en stærkere kundeoplevelse.",
       whiteLabelDescription:
-        "Betalende kunder kan tilføje deres eget brand, beholde det simple flow og indlejre uploaden på deres egen side.",
+        "Betalende kunder kan levere filer med mere tillid, mere kontrol og en langt mere professionel præsentation.",
       whiteLabelCta: "Se branding-flow",
     },
     plans: {
@@ -206,9 +206,9 @@ export const copy = {
       free: { name: "Gratis konto", description: "Opret en konto og få 72 timers opbevaring." },
       pro: { name: "Pro", description: "Længere opbevaring og white-label til virksomheder." },
       pricingEyebrow: "Priser",
-      pricingTitle: "Tre klare trin fra test til virksomhedsbrug.",
+      pricingTitle: "Planer der gør det let at sige ja først og opgradere bagefter.",
       pricingDescription:
-        "Lad gæster prøve produktet, gør gratis brugere til leads, og sælg større limits plus white-label til betalende kunder.",
+        "Brug gratis-planen til at få flere oprettelser. Brug Pro Light og Pro til at tjene på virksomheder der har brug for mere storage, mere indsigt og mere kontrol.",
       perTransfer: "Pr. overførsel",
       retention: "Opbevaring",
     },
