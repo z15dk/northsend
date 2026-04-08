@@ -18,7 +18,7 @@ export default async function DashboardPage() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/settings/branding"
+              href="/hero-editor"
               className="inline-flex items-center justify-center rounded-full bg-pine px-5 py-3 text-sm font-medium text-white transition hover:bg-pine/90"
             >
               Hero editor
