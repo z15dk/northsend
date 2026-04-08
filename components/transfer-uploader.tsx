@@ -52,6 +52,32 @@ function uploadFileWithProgress({
   });
 }
 
+async function runWithConcurrency<T>({
+  items,
+  limit,
+  worker,
+}: {
+  items: T[];
+  limit: number;
+  worker: (item: T) => Promise<void>;
+}) {
+  let currentIndex = 0;
+
+  async function startNext() {
+    const index = currentIndex;
+    currentIndex += 1;
+
+    if (index >= items.length) {
+      return;
+    }
+
+    await worker(items[index]);
+    await startNext();
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => startNext()));
+}
+
 export function TransferUploader({
   currentPlanName,
   currentPlanLimit,
@@ -147,37 +173,41 @@ export function TransferUploader({
         throw new Error("error" in createData ? createData.error : "Failed to create transfer.");
       }
 
-      const uploadedFileIds: string[] = [];
+      const uploadedFileIds = new Set<string>();
       const progressByFile = new Map<string, number>();
 
-      for (const upload of createData.uploads) {
-        const browserFile = files[upload.index];
+      await runWithConcurrency({
+        items: createData.uploads,
+        limit: 3,
+        worker: async (upload) => {
+          const browserFile = files[upload.index];
 
-        if (!browserFile) {
-          throw new Error(`Missing local file for ${upload.name}.`);
-        }
+          if (!browserFile) {
+            throw new Error(`Missing local file for ${upload.name}.`);
+          }
 
-        await uploadFileWithProgress({
-          url: upload.uploadUrl,
-          contentType: upload.contentType,
-          file: browserFile,
-          onProgress: (loadedBytes) => {
-            progressByFile.set(upload.fileId, loadedBytes);
+          await uploadFileWithProgress({
+            url: upload.uploadUrl,
+            contentType: upload.contentType,
+            file: browserFile,
+            onProgress: (loadedBytes) => {
+              progressByFile.set(upload.fileId, loadedBytes);
 
-            const totalUploaded = Array.from(progressByFile.values()).reduce((sum, value) => sum + value, 0);
-            setUploadedBytes(totalUploaded);
-          },
-        });
+              const totalUploaded = Array.from(progressByFile.values()).reduce((sum, value) => sum + value, 0);
+              setUploadedBytes(totalUploaded);
+            },
+          });
 
-        uploadedFileIds.push(upload.fileId);
-      }
+          uploadedFileIds.add(upload.fileId);
+        },
+      });
 
       const completeResponse = await fetch(`/api/transfers/${createData.transferId}/complete`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ uploadedFileIds }),
+        body: JSON.stringify({ uploadedFileIds: Array.from(uploadedFileIds) }),
       });
 
       const completeData = (await completeResponse.json()) as
