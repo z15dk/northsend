@@ -328,24 +328,19 @@ export function TransferUploader({
         )}
       >
         {isHero ? (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex items-center justify-start">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pine text-[11px] font-semibold uppercase tracking-[0.16em] text-white sm:h-14 sm:w-14 sm:text-xs">
                 {copy.send}
-              </div>
-              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.14em] text-ink/60 sm:text-xs sm:tracking-[0.16em]">
-                <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentPlanName}</span>
-                <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentPlanLimit}</span>
-                <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentRetention}</span>
               </div>
             </div>
 
             <label
               htmlFor={`files-${variant}`}
-              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-5 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-6 sm:py-7"
+              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-5 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-6 sm:py-6"
             >
               <p className="text-xs uppercase tracking-[0.2em] text-pine sm:text-sm sm:tracking-[0.24em]">{copy.uploadZone}</p>
-              <h3 className="mt-3 max-w-[8ch] text-3xl font-semibold tracking-tight text-ink sm:max-w-[9ch] sm:text-[2.7rem] md:text-[3.2rem]">
+              <h3 className="mt-3 max-w-[9ch] text-[2.7rem] font-semibold leading-[0.92] tracking-tight text-ink sm:max-w-[10ch] sm:text-[2.95rem] md:text-[3.1rem]">
                 {copy.title}
               </h3>
               <p className="mt-3 max-w-sm text-sm leading-6 text-ink/65">
@@ -360,7 +355,7 @@ export function TransferUploader({
                 onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
               />
 
-              <div className="mt-6 flex flex-col gap-4 border-t border-black/6 pt-4 sm:mt-7 sm:gap-4 sm:pt-5">
+              <div className="mt-5 flex flex-col gap-4 border-t border-black/6 pt-4 sm:mt-6 sm:pt-4">
                 {files.length > 0 ? (
                   <div className="rounded-2xl bg-cloud/70 px-4 py-3 text-sm text-ink/72">
                     <p className="font-medium text-ink">{copy.selectedFiles(files.length)}</p>
@@ -376,22 +371,11 @@ export function TransferUploader({
                   </p>
                 )}
 
-                <div className="grid gap-3 text-sm text-ink/72 sm:grid-cols-3">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.transferLimit}</p>
-                    <p className="mt-1 font-medium text-ink">{currentPlanLimit}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.retention}</p>
-                    <p className="mt-1 font-medium text-ink">{currentRetention}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.whiteLabel}</p>
-                    <p className="mt-1 font-medium text-ink">
-                      {currentPlanName === "Pro" ? copy.included : copy.upgradeRequired}
-                    </p>
-                  </div>
-                </div>
+                <p className="text-sm leading-6 text-ink/62">
+                  {locale === "da"
+                    ? "Opret en gratis bruger og send op til 15 GB gratis."
+                    : "Create a free account and send up to 15 GB for free."}
+                </p>
                 <button
                   type="submit"
                   disabled={isUploading}
