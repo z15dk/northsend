@@ -24,8 +24,13 @@ export async function POST(request: Request) {
     }
 
     const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Account required before upload." }, { status: 401 });
+    }
+
     const result = await createTransferWithUploads({
-      user: user ? { id: user.id, planCode: user.planCode } : null,
+      user: { id: user.id, planCode: user.planCode },
       files,
     });
 

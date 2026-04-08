@@ -57,9 +57,9 @@ export const copy = {
       fomo: "The first 100 users get intro pricing. When the spots are gone, the price goes up.",
     },
     plans: {
-      guest: { name: "Guest", description: "Files stay online for 24 hours." },
-      free: { name: "Free account", description: "Create an account and get 72 hours retention." },
-      pro: { name: "Pro", description: "Longer retention and white-label for businesses." },
+      guest: { name: "Guest", description: "Account required before upload." },
+      free: { name: "Free account", description: "Create an account and get 15 GB per file plus 3 days of storage." },
+      pro: { name: "Pro", description: "More storage, tracking, previews, and notifications." },
       pricingEyebrow: "Pricing",
       pricingTitle: "Plans that make the first yes easy and the upgrade obvious.",
       pricingDescription:
@@ -123,7 +123,7 @@ export const copy = {
     signup: {
       eyebrow: "Signup",
       title: "Create your free account",
-      description: "Unlock 10 GB transfers, keep files available for 72 hours, and turn first-time visitors into real leads.",
+      description: "Unlock up to 15 GB per file, keep transfers available for 3 days, and get started in a more professional flow.",
       haveAccount: "Already have an account?",
       login: "Log in",
       name: "Name",
@@ -212,9 +212,9 @@ export const copy = {
       fomo: "De første 100 brugere får adgang til intropris. Når pladserne er væk, stiger prisen.",
     },
     plans: {
-      guest: { name: "Gæst", description: "Filer ligger online i 24 timer." },
-      free: { name: "Gratis konto", description: "Opret en konto og få 72 timers opbevaring." },
-      pro: { name: "Pro", description: "Længere opbevaring og white-label til virksomheder." },
+      guest: { name: "Gæst", description: "Konto krævet før upload." },
+      free: { name: "Gratis konto", description: "Opret en konto og få op til 15 GB pr. fil samt 3 dages lagring." },
+      pro: { name: "Pro", description: "Mere storage, tracking, previews og notifikationer." },
       pricingEyebrow: "Priser",
       pricingTitle: "Planer der gør det let at sige ja først og opgradere bagefter.",
       pricingDescription:
@@ -278,7 +278,7 @@ export const copy = {
     signup: {
       eyebrow: "Opret konto",
       title: "Opret din gratis konto",
-      description: "Få 10 GB transfers, 72 timers opbevaring og gør førstegangsbesøgende til rigtige leads.",
+      description: "Få op til 15 GB pr. fil, 3 dages lagring og kom i gang i et mere professionelt flow.",
       haveAccount: "Har du allerede en konto?",
       login: "Log ind",
       name: "Navn",

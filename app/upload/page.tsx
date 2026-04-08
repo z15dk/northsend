@@ -8,7 +8,7 @@ export default async function UploadPage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   const copy = t(locale);
-  const plan = getPlanDefinition(user?.planCode);
+  const plan = getPlanDefinition(user?.planCode ?? "free");
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
@@ -22,6 +22,7 @@ export default async function UploadPage() {
         currentPlanLimit={formatBytes(plan.uploadLimitBytes)}
         currentRetention={`${plan.retentionHours} hours`}
         locale={locale}
+        requiresAccount={!user}
       />
       <div className="mt-6 flex flex-wrap gap-3 text-sm">
         <Link href="/signup" className="rounded-full bg-pine px-5 py-3 font-medium text-white">

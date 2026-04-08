@@ -6,6 +6,7 @@ type UploadPreviewProps = {
   currentPlanLimit: string;
   currentRetention: string;
   locale: Locale;
+  requiresAccount?: boolean;
 };
 
 export function UploadPreview(props: UploadPreviewProps) {

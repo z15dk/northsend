@@ -1,4 +1,4 @@
-export type PlanCode = "guest" | "free" | "pro";
+export type PlanCode = "guest" | "free" | "pro_light" | "pro";
 
 export type PlanDefinition = {
   code: PlanCode;
@@ -16,28 +16,37 @@ export const planDefinitions: Record<PlanCode, PlanDefinition> = {
   guest: {
     code: "guest",
     name: "Guest",
-    uploadLimitBytes: 2 * gb,
-    retentionHours: 24,
+    uploadLimitBytes: 0,
+    retentionHours: 0,
     priceLabel: "Free",
-    highlight: "Quick sharing without signup",
+    highlight: "Account required before upload",
     whiteLabelEnabled: false,
   },
   free: {
     code: "free",
     name: "Free",
-    uploadLimitBytes: 10 * gb,
+    uploadLimitBytes: 15 * gb,
     retentionHours: 72,
     priceLabel: "Free",
-    highlight: "Signup unlocks larger transfers",
+    highlight: "Up to 15 GB per file with 3 days of storage",
+    whiteLabelEnabled: false,
+  },
+  pro_light: {
+    code: "pro_light",
+    name: "Pro Light",
+    uploadLimitBytes: 150 * gb,
+    retentionHours: 720,
+    priceLabel: "149 kr/mo",
+    highlight: "More capacity, fair use traffic, and basic tracking",
     whiteLabelEnabled: false,
   },
   pro: {
     code: "pro",
     name: "Pro",
-    uploadLimitBytes: 100 * gb,
+    uploadLimitBytes: 500 * gb,
     retentionHours: 720,
-    priceLabel: "99 kr/mo",
-    highlight: "White-label for business use",
+    priceLabel: "249 kr/mo",
+    highlight: "Tracking, previews, notifications, and higher storage",
     whiteLabelEnabled: true,
   },
 };
@@ -47,11 +56,15 @@ export function getPlanDefinition(code: string | null | undefined): PlanDefiniti
     return planDefinitions.pro;
   }
 
+  if (code === "pro_light") {
+    return planDefinitions.pro_light;
+  }
+
   if (code === "free") {
     return planDefinitions.free;
   }
 
-  return planDefinitions.guest;
+  return planDefinitions.free;
 }
 
 export function formatBytes(bytes: number) {

@@ -10,7 +10,7 @@ export default async function HomePage() {
   const user = await getCurrentUser();
   const locale = await getLocale();
   const copy = t(locale);
-  const plan = getPlanDefinition(user?.planCode);
+  const plan = getPlanDefinition(user?.planCode ?? "free");
   const plans = getMarketingPlans(locale);
 
   return (
@@ -26,6 +26,7 @@ export default async function HomePage() {
                   currentPlanLimit={formatBytes(plan.uploadLimitBytes)}
                   currentRetention={`${plan.retentionHours} hours`}
                   locale={locale}
+                  requiresAccount={!user}
                 />
               </div>
             </div>

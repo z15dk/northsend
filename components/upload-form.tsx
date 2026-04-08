@@ -8,6 +8,7 @@ type UploadFormProps = {
   currentPlanLimit: string;
   currentRetention: string;
   locale: Locale;
+  requiresAccount?: boolean;
 };
 
 export function UploadForm(props: UploadFormProps) {

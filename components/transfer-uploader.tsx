@@ -12,6 +12,7 @@ type TransferUploaderProps = {
   currentRetention: string;
   locale: Locale;
   variant?: "hero" | "page";
+  requiresAccount?: boolean;
 };
 
 function uploadFileWithProgress({
@@ -86,6 +87,7 @@ export function TransferUploader({
   currentRetention,
   locale,
   variant = "page",
+  requiresAccount = false,
 }: TransferUploaderProps) {
   const copy = i18nCopy[locale].uploader;
   const [files, setFiles] = useState<File[]>([]);
@@ -133,6 +135,11 @@ export function TransferUploader({
       setError(copy.chooseBeforeContinue);
       setSuccess(null);
       setDownloadPath(null);
+      return;
+    }
+
+    if (requiresAccount) {
+      window.location.href = "/signup";
       return;
     }
 
@@ -352,6 +359,11 @@ export function TransferUploader({
                 <span className="rounded-full border border-black/8 bg-cloud/70 px-4 py-2 text-ink/75">
                   {files.length > 0 ? copy.totalSize(totalSizeLabel) : copy.dragHint}
                 </span>
+                {requiresAccount ? (
+                  <span className="rounded-full border border-pine/15 bg-pine/8 px-4 py-2 text-ink/75">
+                    {locale === "da" ? "Konto krævet før upload" : "Account required before upload"}
+                  </span>
+                ) : null}
               </div>
 
               <input
@@ -384,7 +396,13 @@ export function TransferUploader({
                   disabled={isUploading}
                   className="shrink-0 rounded-full bg-pine px-6 py-3 text-sm font-medium text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {isUploading ? copy.uploading : copy.uploadTransfer}
+                  {isUploading
+                    ? copy.uploading
+                    : requiresAccount
+                      ? locale === "da"
+                        ? "Opret gratis konto"
+                        : "Create free account"
+                      : copy.uploadTransfer}
                 </button>
               </div>
             </label>
@@ -544,7 +562,13 @@ export function TransferUploader({
                   disabled={isUploading}
                   className="w-full rounded-full bg-pine px-5 py-3 text-sm font-medium text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {isUploading ? copy.uploading : copy.uploadTransfer}
+                  {isUploading
+                    ? copy.uploading
+                    : requiresAccount
+                      ? locale === "da"
+                        ? "Opret gratis konto"
+                        : "Create free account"
+                      : copy.uploadTransfer}
                 </button>
                 <p className="text-sm text-ink/55">
                   {copy.guestsHint}

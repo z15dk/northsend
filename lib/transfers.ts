@@ -48,7 +48,11 @@ export async function createTransferWithUploads({
   user: Pick<User, "id" | "planCode"> | null;
   files: TransferFileInput[];
 }) {
-  const planCode = (user?.planCode ?? "guest") as PlanCode;
+  if (!user) {
+    throw new Error("Account required before upload.");
+  }
+
+  const planCode = user.planCode as PlanCode;
   const plan = getPlanDefinition(planCode);
   const totalSizeBytes = files.reduce((sum, file) => sum + file.size, 0);
 
