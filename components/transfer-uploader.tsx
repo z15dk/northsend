@@ -342,29 +342,15 @@ export function TransferUploader({
 
             <label
               htmlFor={`files-${variant}`}
-              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-6 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-7 sm:py-10"
+              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-5 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-6 sm:py-7"
             >
               <p className="text-xs uppercase tracking-[0.2em] text-pine sm:text-sm sm:tracking-[0.24em]">{copy.uploadZone}</p>
-              <h3 className="mt-3 max-w-md text-3xl font-semibold tracking-tight text-ink sm:mt-4 sm:text-4xl md:text-5xl">
+              <h3 className="mt-3 max-w-[8ch] text-3xl font-semibold tracking-tight text-ink sm:max-w-[9ch] sm:text-[2.7rem] md:text-[3.2rem]">
                 {copy.title}
               </h3>
-              <p className="mt-3 max-w-lg text-sm leading-6 text-ink/65 sm:mt-4 sm:leading-7">
+              <p className="mt-3 max-w-sm text-sm leading-6 text-ink/65">
                 {copy.description}
               </p>
-
-              <div className="mt-6 flex flex-wrap gap-2 text-sm sm:mt-10 sm:gap-3">
-                <span className="rounded-full border border-black/8 bg-cloud/70 px-4 py-2 text-ink/75">
-                  {files.length > 0 ? copy.selectedFiles(files.length) : copy.clickToChoose}
-                </span>
-                <span className="rounded-full border border-black/8 bg-cloud/70 px-4 py-2 text-ink/75">
-                  {files.length > 0 ? copy.totalSize(totalSizeLabel) : copy.dragHint}
-                </span>
-                {requiresAccount ? (
-                  <span className="rounded-full border border-pine/15 bg-pine/8 px-4 py-2 text-ink/75">
-                    {locale === "da" ? "Konto krævet før upload" : "Account required before upload"}
-                  </span>
-                ) : null}
-              </div>
 
               <input
                 id={`files-${variant}`}
@@ -374,8 +360,23 @@ export function TransferUploader({
                 onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
               />
 
-              <div className="mt-8 flex flex-col gap-5 border-t border-black/6 pt-5 sm:mt-10 sm:gap-4 sm:pt-6">
-                <div className="grid gap-3 text-sm text-ink/72 sm:grid-cols-3 md:grid-cols-3">
+              <div className="mt-6 flex flex-col gap-4 border-t border-black/6 pt-4 sm:mt-7 sm:gap-4 sm:pt-5">
+                {files.length > 0 ? (
+                  <div className="rounded-2xl bg-cloud/70 px-4 py-3 text-sm text-ink/72">
+                    <p className="font-medium text-ink">{copy.selectedFiles(files.length)}</p>
+                    <p className="mt-1 text-ink/60">{copy.totalSize(totalSizeLabel)}</p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-ink/60">
+                    {requiresAccount
+                      ? locale === "da"
+                        ? "Vælg filer og opret en gratis konto for at starte upload."
+                        : "Choose files and create a free account to start uploading."
+                      : copy.dragHint}
+                  </p>
+                )}
+
+                <div className="grid gap-3 text-sm text-ink/72 sm:grid-cols-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.transferLimit}</p>
                     <p className="mt-1 font-medium text-ink">{currentPlanLimit}</p>
@@ -407,7 +408,7 @@ export function TransferUploader({
               </div>
             </label>
 
-            {files.length > 0 ? (
+            {files.length > 0 && !isHero ? (
               <div className="space-y-2">
                 {files.slice(0, 3).map((file) => (
                   <div
