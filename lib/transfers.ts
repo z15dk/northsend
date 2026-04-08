@@ -2,13 +2,44 @@ import { randomUUID } from "node:crypto";
 import type { User } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getPlanDefinition, type PlanCode } from "@/lib/plans";
-import { createSignedUploadUrl } from "@/lib/storage";
+import {
+  createMultipartUpload,
+  createSignedUploadPartUrl,
+  createSignedUploadUrl,
+} from "@/lib/storage";
+
+const MULTIPART_THRESHOLD_BYTES = 100 * 1024 * 1024;
+const MULTIPART_CHUNK_SIZE_BYTES = 25 * 1024 * 1024;
 
 export type TransferFileInput = {
   name: string;
   size: number;
   type: string;
 };
+
+export type TransferUploadDescriptor =
+  | {
+      mode: "single";
+      index: number;
+      fileId: string;
+      name: string;
+      uploadUrl: string;
+      contentType: string;
+    }
+  | {
+      mode: "multipart";
+      index: number;
+      fileId: string;
+      name: string;
+      contentType: string;
+      uploadId: string;
+      chunkSize: number;
+      parts: Array<{
+        partNumber: number;
+        size: number;
+        uploadUrl: string;
+      }>;
+    };
 
 export async function createTransferWithUploads({
   user,
@@ -61,16 +92,58 @@ export async function createTransferWithUploads({
   });
 
   const uploads = await Promise.all(
-    transfer.files.map(async (file, index) => ({
-      index,
-      fileId: file.id,
-      name: file.originalName,
-      uploadUrl: await createSignedUploadUrl({
+    transfer.files.map(async (file, index): Promise<TransferUploadDescriptor> => {
+      const contentType = file.mimeType || "application/octet-stream";
+      const fileSize = Number(file.sizeBytes);
+
+      if (fileSize < MULTIPART_THRESHOLD_BYTES) {
+        return {
+          mode: "single",
+          index,
+          fileId: file.id,
+          name: file.originalName,
+          uploadUrl: await createSignedUploadUrl({
+            key: file.storageKey,
+            contentType,
+          }),
+          contentType,
+        };
+      }
+
+      const uploadId = await createMultipartUpload({
         key: file.storageKey,
-        contentType: file.mimeType || "application/octet-stream",
-      }),
-      contentType: file.mimeType || "application/octet-stream",
-    })),
+        contentType,
+      });
+      const partCount = Math.ceil(fileSize / MULTIPART_CHUNK_SIZE_BYTES);
+      const parts = await Promise.all(
+        Array.from({ length: partCount }, async (_, partIndex) => {
+          const partNumber = partIndex + 1;
+          const start = partIndex * MULTIPART_CHUNK_SIZE_BYTES;
+          const end = Math.min(start + MULTIPART_CHUNK_SIZE_BYTES, fileSize);
+
+          return {
+            partNumber,
+            size: end - start,
+            uploadUrl: await createSignedUploadPartUrl({
+              key: file.storageKey,
+              uploadId,
+              partNumber,
+            }),
+          };
+        }),
+      );
+
+      return {
+        mode: "multipart",
+        index,
+        fileId: file.id,
+        name: file.originalName,
+        contentType,
+        uploadId,
+        chunkSize: MULTIPART_CHUNK_SIZE_BYTES,
+        parts,
+      };
+    }),
   );
 
   return {

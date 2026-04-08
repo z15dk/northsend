@@ -18,14 +18,16 @@ function uploadFileWithProgress({
   url,
   contentType,
   file,
+  fileName,
   onProgress,
 }: {
   url: string;
   contentType: string;
-  file: File;
+  file: Blob;
+  fileName: string;
   onProgress: (loadedBytes: number) => void;
 }) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<string | null>((resolve, reject) => {
     const request = new XMLHttpRequest();
 
     request.open("PUT", url);
@@ -40,14 +42,14 @@ function uploadFileWithProgress({
     request.onload = () => {
       if (request.status >= 200 && request.status < 300) {
         onProgress(file.size);
-        resolve();
+        resolve(request.getResponseHeader("ETag"));
         return;
       }
 
-      reject(new Error(`Upload failed for ${file.name}.`));
+      reject(new Error(`Upload failed for ${fileName}.`));
     };
 
-    request.onerror = () => reject(new Error(`Upload failed for ${file.name}.`));
+    request.onerror = () => reject(new Error(`Upload failed for ${fileName}.`));
     request.send(file);
   });
 }
@@ -160,20 +162,45 @@ export function TransferUploader({
         | { error: string }
         | {
             transferId: string;
-            uploads: Array<{
-              index: number;
-              fileId: string;
-              name: string;
-              uploadUrl: string;
-              contentType: string;
-            }>;
+            uploads: Array<
+              | {
+                  mode: "single";
+                  index: number;
+                  fileId: string;
+                  name: string;
+                  uploadUrl: string;
+                  contentType: string;
+                }
+              | {
+                  mode: "multipart";
+                  index: number;
+                  fileId: string;
+                  name: string;
+                  contentType: string;
+                  uploadId: string;
+                  chunkSize: number;
+                  parts: Array<{
+                    partNumber: number;
+                    size: number;
+                    uploadUrl: string;
+                  }>;
+                }
+            >;
           };
 
       if (!createResponse.ok || !("uploads" in createData)) {
         throw new Error("error" in createData ? createData.error : "Failed to create transfer.");
       }
 
-      const uploadedFileIds = new Set<string>();
+      const completedUploads: Array<
+        | { fileId: string; mode: "single" }
+        | {
+            fileId: string;
+            mode: "multipart";
+            uploadId: string;
+            parts: Array<{ partNumber: number; etag: string }>;
+          }
+      > = [];
       const progressByFile = new Map<string, number>();
 
       await runWithConcurrency({
@@ -186,19 +213,69 @@ export function TransferUploader({
             throw new Error(`Missing local file for ${upload.name}.`);
           }
 
-          await uploadFileWithProgress({
-            url: upload.uploadUrl,
-            contentType: upload.contentType,
-            file: browserFile,
-            onProgress: (loadedBytes) => {
-              progressByFile.set(upload.fileId, loadedBytes);
+          if (upload.mode === "single") {
+            await uploadFileWithProgress({
+              url: upload.uploadUrl,
+              contentType: upload.contentType,
+              file: browserFile,
+              fileName: upload.name,
+              onProgress: (loadedBytes) => {
+                progressByFile.set(upload.fileId, loadedBytes);
 
-              const totalUploaded = Array.from(progressByFile.values()).reduce((sum, value) => sum + value, 0);
-              setUploadedBytes(totalUploaded);
+                const totalUploaded = Array.from(progressByFile.values()).reduce((sum, value) => sum + value, 0);
+                setUploadedBytes(totalUploaded);
+              },
+            });
+
+            completedUploads.push({ fileId: upload.fileId, mode: "single" });
+            return;
+          }
+
+          const partProgress = new Map<number, number>();
+          const completedParts: Array<{ partNumber: number; etag: string }> = [];
+
+          await runWithConcurrency({
+            items: upload.parts,
+            limit: 4,
+            worker: async (part) => {
+              const start = (part.partNumber - 1) * upload.chunkSize;
+              const end = Math.min(start + part.size, browserFile.size);
+              const chunk = browserFile.slice(start, end, upload.contentType);
+
+              const etag = await uploadFileWithProgress({
+                url: part.uploadUrl,
+                contentType: upload.contentType,
+                file: chunk,
+                fileName: `${upload.name} (part ${part.partNumber})`,
+                onProgress: (loadedBytes) => {
+                  partProgress.set(part.partNumber, loadedBytes);
+                  progressByFile.set(
+                    upload.fileId,
+                    Array.from(partProgress.values()).reduce((sum, value) => sum + value, 0),
+                  );
+
+                  const totalUploaded = Array.from(progressByFile.values()).reduce((sum, value) => sum + value, 0);
+                  setUploadedBytes(totalUploaded);
+                },
+              });
+
+              if (!etag) {
+                throw new Error(`Missing upload confirmation for ${upload.name} part ${part.partNumber}.`);
+              }
+
+              completedParts.push({
+                partNumber: part.partNumber,
+                etag,
+              });
             },
           });
 
-          uploadedFileIds.add(upload.fileId);
+          completedUploads.push({
+            fileId: upload.fileId,
+            mode: "multipart",
+            uploadId: upload.uploadId,
+            parts: completedParts,
+          });
         },
       });
 
@@ -207,7 +284,7 @@ export function TransferUploader({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ uploadedFileIds: Array.from(uploadedFileIds) }),
+        body: JSON.stringify({ uploads: completedUploads }),
       });
 
       const completeData = (await completeResponse.json()) as
