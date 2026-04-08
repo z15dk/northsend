@@ -4,6 +4,7 @@ import { SectionTitle } from "@/components/section-title";
 import { UploadPreview } from "@/components/upload-preview";
 import { getLocale, t } from "@/lib/i18n";
 import { formatBytes, getPlanDefinition } from "@/lib/plans";
+import { getSiteSettings } from "@/lib/site-settings";
 import { getMarketingPlans } from "@/lib/site";
 
 export default async function HomePage() {
@@ -12,12 +13,23 @@ export default async function HomePage() {
   const copy = t(locale);
   const plan = getPlanDefinition(user?.planCode ?? "free");
   const plans = getMarketingPlans(locale);
+  const siteSettings = await getSiteSettings(locale);
 
   return (
     <div className="bg-[#090909]">
       <section className="mx-auto min-h-screen max-w-[1600px] px-3 py-3 sm:px-4 sm:py-4">
-        <div className="relative min-h-[calc(100vh-1.5rem)] overflow-hidden rounded-[2rem] bg-black shadow-[0_30px_120px_rgba(0,0,0,0.45)] sm:min-h-[calc(100vh-2rem)] sm:rounded-[2.5rem]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_75%,rgba(22,76,58,0.34),transparent_20%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.08),transparent_18%)]" />
+        <div
+          className="relative min-h-[calc(100vh-1.5rem)] overflow-hidden rounded-[2rem] shadow-[0_30px_120px_rgba(0,0,0,0.45)] sm:min-h-[calc(100vh-2rem)] sm:rounded-[2.5rem]"
+          style={{
+            background: `linear-gradient(135deg, ${siteSettings.heroBackgroundFrom}, ${siteSettings.heroBackgroundTo})`,
+          }}
+        >
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 20% 75%, ${siteSettings.heroGlowColor}, transparent 20%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 18%)`,
+            }}
+          />
 
           <div className="relative flex items-start justify-between gap-4 p-4 sm:p-6">
             <Link
@@ -72,9 +84,9 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative flex min-h-[calc(100vh-7rem)] flex-col justify-end p-4 pt-10 sm:p-6 sm:pt-14 lg:min-h-[calc(100vh-9rem)] lg:p-10">
+          <div className="relative flex min-h-[calc(100vh-7rem)] flex-col justify-start p-4 pt-6 sm:p-6 sm:pt-10 lg:min-h-[calc(100vh-9rem)] lg:justify-end lg:p-10">
             <div className="grid items-end gap-8 xl:grid-cols-[420px_1fr] xl:gap-14">
-              <div className="order-2 w-full max-w-[26rem] xl:order-1">
+              <div className="order-1 w-full max-w-[26rem] xl:order-1">
                 <UploadPreview
                   currentPlanName={plan.name}
                   currentPlanLimit={formatBytes(plan.uploadLimitBytes)}
@@ -84,16 +96,16 @@ export default async function HomePage() {
                 />
               </div>
 
-              <div className="order-1 flex flex-col justify-end xl:order-2">
+              <div className="order-2 flex flex-col justify-end xl:order-2">
                 <div className="max-w-2xl xl:ml-auto xl:max-w-[34rem]">
                   <p className="text-[11px] uppercase tracking-[0.28em] text-white/55 sm:text-xs">
-                    {copy.home.badge}
+                    {siteSettings.heroBadge}
                   </p>
                   <h1 className="mt-4 max-w-[11ch] text-4xl font-semibold tracking-[-0.065em] text-white sm:text-6xl xl:text-[5.4rem] xl:leading-[0.92]">
-                    {copy.home.title}
+                    {siteSettings.heroTitle}
                   </h1>
                   <p className="mt-4 max-w-xl text-sm leading-7 text-white/68 sm:text-base">
-                    {copy.home.description}
+                    {siteSettings.heroDescription}
                   </p>
 
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -101,18 +113,18 @@ export default async function HomePage() {
                       href="/upload"
                       className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-medium text-black"
                     >
-                      {copy.home.primaryCta}
+                      {siteSettings.heroPrimaryCtaLabel}
                     </Link>
                     <Link
                       href="/signup"
                       className="inline-flex items-center justify-center rounded-full border border-white/16 bg-white/8 px-6 py-3 text-sm font-medium text-white backdrop-blur"
                     >
-                      {copy.home.secondaryCta}
+                      {siteSettings.heroSecondaryCtaLabel}
                     </Link>
                   </div>
 
                   <p className="mt-6 max-w-lg text-sm leading-6 text-white/46">
-                    {copy.home.trust}
+                    {siteSettings.heroTrust}
                   </p>
                 </div>
               </div>

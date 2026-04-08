@@ -133,6 +133,21 @@ model WhiteLabelSetting {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model SiteSetting {
+  id                    String   @id
+  heroBadge             String
+  heroTitle             String
+  heroDescription       String
+  heroTrust             String
+  heroPrimaryCtaLabel   String
+  heroSecondaryCtaLabel String
+  heroBackgroundFrom    String
+  heroBackgroundTo      String
+  heroGlowColor         String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
 model TransferEvent {
   id         String            @id @default(cuid())
   transferId String
