@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { copy as i18nCopy, type Locale } from "@/lib/copy";
 import { formatBytes } from "@/lib/plans";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,44 @@ type TransferUploaderProps = {
   locale: Locale;
   variant?: "hero" | "page";
 };
+
+function uploadFileWithProgress({
+  url,
+  contentType,
+  file,
+  onProgress,
+}: {
+  url: string;
+  contentType: string;
+  file: File;
+  onProgress: (loadedBytes: number) => void;
+}) {
+  return new Promise<void>((resolve, reject) => {
+    const request = new XMLHttpRequest();
+
+    request.open("PUT", url);
+    request.setRequestHeader("Content-Type", contentType);
+
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        onProgress(event.loaded);
+      }
+    };
+
+    request.onload = () => {
+      if (request.status >= 200 && request.status < 300) {
+        onProgress(file.size);
+        resolve();
+        return;
+      }
+
+      reject(new Error(`Upload failed for ${file.name}.`));
+    };
+
+    request.onerror = () => reject(new Error(`Upload failed for ${file.name}.`));
+    request.send(file);
+  });
+}
 
 export function TransferUploader({
   currentPlanName,
@@ -27,10 +65,38 @@ export function TransferUploader({
   const [success, setSuccess] = useState<string | null>(null);
   const [downloadPath, setDownloadPath] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadedBytes, setUploadedBytes] = useState(0);
+  const [messageIndex, setMessageIndex] = useState(0);
 
   const totalSizeBytes = useMemo(() => files.reduce((sum, file) => sum + file.size, 0), [files]);
   const totalSizeLabel = useMemo(() => formatBytes(totalSizeBytes), [totalSizeBytes]);
   const isHero = variant === "hero";
+  const uploadPercent = totalSizeBytes > 0 ? Math.min(100, Math.round((uploadedBytes / totalSizeBytes) * 100)) : 0;
+  const uploadedSizeLabel = useMemo(() => formatBytes(uploadedBytes), [uploadedBytes]);
+
+  useEffect(() => {
+    if (!isUploading) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setMessageIndex((current) => {
+        if (copy.uploadMessages.length <= 1) {
+          return current;
+        }
+
+        let next = current;
+
+        while (next === current) {
+          next = Math.floor(Math.random() * copy.uploadMessages.length);
+        }
+
+        return next;
+      });
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, [copy.uploadMessages.length, isUploading]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,6 +112,8 @@ export function TransferUploader({
     setError(null);
     setSuccess(null);
     setDownloadPath(null);
+    setUploadedBytes(0);
+    setMessageIndex(Math.floor(Math.random() * copy.uploadMessages.length));
 
     try {
       const createResponse = await fetch("/api/transfers", {
@@ -80,6 +148,7 @@ export function TransferUploader({
       }
 
       const uploadedFileIds: string[] = [];
+      const progressByFile = new Map<string, number>();
 
       for (const upload of createData.uploads) {
         const browserFile = files[upload.index];
@@ -88,17 +157,17 @@ export function TransferUploader({
           throw new Error(`Missing local file for ${upload.name}.`);
         }
 
-        const uploadResponse = await fetch(upload.uploadUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": upload.contentType,
-          },
-          body: browserFile,
-        });
+        await uploadFileWithProgress({
+          url: upload.uploadUrl,
+          contentType: upload.contentType,
+          file: browserFile,
+          onProgress: (loadedBytes) => {
+            progressByFile.set(upload.fileId, loadedBytes);
 
-        if (!uploadResponse.ok) {
-          throw new Error(`Upload failed for ${upload.name}.`);
-        }
+            const totalUploaded = Array.from(progressByFile.values()).reduce((sum, value) => sum + value, 0);
+            setUploadedBytes(totalUploaded);
+          },
+        });
 
         uploadedFileIds.push(upload.fileId);
       }
@@ -122,6 +191,7 @@ export function TransferUploader({
       setSuccess(copy.uploadSuccess);
       setDownloadPath(completeData.downloadPath);
       setFiles([]);
+      setUploadedBytes(totalSizeBytes);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Upload failed.");
     } finally {
@@ -227,6 +297,22 @@ export function TransferUploader({
               </div>
             ) : null}
 
+            {isUploading ? (
+              <div className="rounded-[1.5rem] border border-pine/10 bg-pine/5 px-4 py-4">
+                <div className="flex items-center justify-between gap-4 text-sm text-ink">
+                  <p className="font-medium">{copy.uploadProgress(uploadPercent)}</p>
+                  <p className="text-ink/60">{copy.uploadProgressDetail(uploadedSizeLabel, totalSizeLabel)}</p>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/6">
+                  <div
+                    className="h-full rounded-full bg-pine transition-[width] duration-500"
+                    style={{ width: `${uploadPercent}%` }}
+                  />
+                </div>
+                <p className="mt-3 text-sm text-ink/68">{copy.uploadMessages[messageIndex]}</p>
+              </div>
+            ) : null}
+
             {error ? <p className="text-sm text-red-700">{error}</p> : null}
             {success ? (
               <div className="rounded-2xl bg-pine px-4 py-4 text-sm text-white">
@@ -289,6 +375,22 @@ export function TransferUploader({
                     </div>
                   ))}
                   {files.length > 5 ? <p className="text-sm text-ink/55">{copy.moreFiles(files.length - 5)}</p> : null}
+                </div>
+              ) : null}
+
+              {isUploading ? (
+                <div className="mt-4 rounded-[1.5rem] border border-pine/10 bg-pine/5 px-4 py-4">
+                  <div className="flex items-center justify-between gap-4 text-sm text-ink">
+                    <p className="font-medium">{copy.uploadProgress(uploadPercent)}</p>
+                    <p className="text-ink/60">{copy.uploadProgressDetail(uploadedSizeLabel, totalSizeLabel)}</p>
+                  </div>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/6">
+                    <div
+                      className="h-full rounded-full bg-pine transition-[width] duration-500"
+                      style={{ width: `${uploadPercent}%` }}
+                    />
+                  </div>
+                  <p className="mt-3 text-sm text-ink/68">{copy.uploadMessages[messageIndex]}</p>
                 </div>
               ) : null}
 
