@@ -317,23 +317,23 @@ export function TransferUploader({
     <div
       className={cn(
         "relative overflow-hidden rounded-[2.5rem] border border-black/5 bg-white/88 shadow-card",
-        isHero ? "p-4" : "p-6",
+        isHero ? "p-2.5 sm:p-4" : "p-4 sm:p-6",
       )}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,#dfe9e4_0%,transparent_38%),radial-gradient(circle_at_bottom_right,#efe4d5_0%,transparent_34%)]" />
       <div
         className={cn(
           "relative rounded-[2rem] border border-black/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(247,243,235,0.92)_100%)]",
-          isHero ? "p-6 md:p-8" : "p-6",
+          isHero ? "p-4 sm:p-6 md:p-8" : "p-4 sm:p-6",
         )}
       >
         {isHero ? (
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="flex items-center justify-between">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pine text-xs font-semibold uppercase tracking-[0.16em] text-white">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pine text-[11px] font-semibold uppercase tracking-[0.16em] text-white sm:h-14 sm:w-14 sm:text-xs">
                 {copy.send}
               </div>
-              <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.16em] text-ink/60">
+              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.14em] text-ink/60 sm:text-xs sm:tracking-[0.16em]">
                 <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentPlanName}</span>
                 <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentPlanLimit}</span>
                 <span className="rounded-full border border-black/6 bg-white px-3 py-2">{currentRetention}</span>
@@ -342,17 +342,17 @@ export function TransferUploader({
 
             <label
               htmlFor={`files-${variant}`}
-              className="block cursor-pointer rounded-[2rem] border border-dashed border-pine/25 bg-white/82 px-7 py-10 transition hover:border-pine/35 hover:bg-white"
+              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-6 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-7 sm:py-10"
             >
-              <p className="text-sm uppercase tracking-[0.24em] text-pine">{copy.uploadZone}</p>
-              <h3 className="mt-4 max-w-md text-4xl font-semibold tracking-tight text-ink md:text-5xl">
+              <p className="text-xs uppercase tracking-[0.2em] text-pine sm:text-sm sm:tracking-[0.24em]">{copy.uploadZone}</p>
+              <h3 className="mt-3 max-w-md text-3xl font-semibold tracking-tight text-ink sm:mt-4 sm:text-4xl md:text-5xl">
                 {copy.title}
               </h3>
-              <p className="mt-4 max-w-lg text-sm leading-7 text-ink/65">
+              <p className="mt-3 max-w-lg text-sm leading-6 text-ink/65 sm:mt-4 sm:leading-7">
                 {copy.description}
               </p>
 
-              <div className="mt-10 flex flex-wrap gap-3 text-sm">
+              <div className="mt-6 flex flex-wrap gap-2 text-sm sm:mt-10 sm:gap-3">
                 <span className="rounded-full border border-black/8 bg-cloud/70 px-4 py-2 text-ink/75">
                   {files.length > 0 ? copy.selectedFiles(files.length) : copy.clickToChoose}
                 </span>
@@ -374,8 +374,8 @@ export function TransferUploader({
                 onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
               />
 
-              <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-black/6 pt-6">
-                <div className="grid gap-3 text-sm text-ink/72 md:grid-cols-3">
+              <div className="mt-8 flex flex-col gap-5 border-t border-black/6 pt-5 sm:mt-10 sm:gap-4 sm:pt-6">
+                <div className="grid gap-3 text-sm text-ink/72 sm:grid-cols-3 md:grid-cols-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.16em] text-ink/45">{copy.transferLimit}</p>
                     <p className="mt-1 font-medium text-ink">{currentPlanLimit}</p>
@@ -394,7 +394,7 @@ export function TransferUploader({
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="shrink-0 rounded-full bg-pine px-6 py-3 text-sm font-medium text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-pine px-6 py-3 text-sm font-medium text-white transition hover:bg-pine/90 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                 >
                   {isUploading
                     ? copy.uploading
@@ -412,7 +412,7 @@ export function TransferUploader({
                 {files.slice(0, 3).map((file) => (
                   <div
                     key={`${file.name}-${file.size}-${file.lastModified}`}
-                    className="flex items-center justify-between rounded-2xl bg-white/90 px-4 py-3 text-sm"
+                    className="flex items-center justify-between gap-3 rounded-2xl bg-white/90 px-4 py-3 text-sm"
                   >
                     <span className="truncate pr-4 text-ink">{file.name}</span>
                     <span className="whitespace-nowrap text-ink/60">{formatBytes(file.size)}</span>
@@ -454,7 +454,7 @@ export function TransferUploader({
           </form>
         ) : (
           <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_18rem]">
-            <div className="rounded-[1.75rem] border border-dashed border-pine/25 bg-white/70 p-8">
+            <div className="rounded-[1.4rem] border border-dashed border-pine/25 bg-white/70 p-5 sm:rounded-[1.75rem] sm:p-8">
               <div className="flex justify-center">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pine text-xs font-semibold uppercase tracking-[0.16em] text-white">
                   {copy.send}
@@ -471,7 +471,7 @@ export function TransferUploader({
 
               <label
                 htmlFor={`files-${variant}`}
-                className="mt-8 block cursor-pointer rounded-[1.5rem] border border-black/8 bg-cloud/70 p-6 transition hover:border-pine/30 hover:bg-white"
+                className="mt-6 block cursor-pointer rounded-[1.25rem] border border-black/8 bg-cloud/70 p-5 transition hover:border-pine/30 hover:bg-white sm:mt-8 sm:rounded-[1.5rem] sm:p-6"
               >
                 <span className="block text-base font-medium text-ink">
                   {files.length > 0 ? copy.selectedFiles(files.length) : copy.chooseFiles}
