@@ -15,83 +15,87 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-16 px-4 py-4 sm:px-6 md:gap-24 md:py-10">
-      <section className="flex min-h-[auto] flex-col justify-center pt-4 md:min-h-[88vh] md:pt-0">
-        <div className="grid gap-6 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:gap-8">
-          <div className="order-1">
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-black/6 bg-white/82 p-1.5 shadow-[0_18px_50px_rgba(31,39,34,0.1)] backdrop-blur sm:rounded-[2.2rem] sm:p-2 md:rounded-[2.6rem] md:p-3">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(223,233,228,0.9),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(239,228,213,0.9),transparent_32%)]" />
-              <div className="relative">
-                <UploadPreview
-                  currentPlanName={plan.name}
-                  currentPlanLimit={formatBytes(plan.uploadLimitBytes)}
-                  currentRetention={`${plan.retentionHours} hours`}
-                  locale={locale}
-                  requiresAccount={!user}
-                />
+      <section className="flex min-h-[auto] flex-col justify-center pt-2 md:min-h-[88vh] md:pt-0">
+        <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-[linear-gradient(135deg,#fbfaf7_0%,#f3efe7_52%,#ece7dc_100%)] px-4 py-4 shadow-[0_24px_70px_rgba(31,39,34,0.1)] sm:px-6 sm:py-6 md:rounded-[2.8rem] md:px-8 md:py-8">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(223,233,228,0.92),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(239,228,213,0.82),transparent_30%)]" />
+          <div className="relative grid gap-6 lg:min-h-[72vh] lg:grid-cols-[24rem_1fr] lg:gap-10 xl:grid-cols-[27rem_1fr]">
+            <div className="order-1 self-start">
+              <UploadPreview
+                currentPlanName={plan.name}
+                currentPlanLimit={formatBytes(plan.uploadLimitBytes)}
+                currentRetention={`${plan.retentionHours} hours`}
+                locale={locale}
+                requiresAccount={!user}
+              />
+            </div>
+
+            <div className="order-2 flex flex-col justify-between lg:py-2">
+              <div className="flex justify-start lg:justify-end">
+                <div className="inline-flex rounded-full border border-black/6 bg-white/82 px-3 py-1.5 text-xs text-ink/68 shadow-sm backdrop-blur sm:px-4 sm:py-2 sm:text-sm">
+                  {copy.home.badge}
+                </div>
+              </div>
+
+              <div className="max-w-xl pt-2 lg:ml-auto lg:pt-0">
+                <h1 className="max-w-[11ch] text-[2.55rem] font-semibold tracking-[-0.065em] text-ink sm:text-5xl lg:text-6xl xl:text-[4.2rem] xl:leading-[0.94]">
+                  {copy.home.title}
+                </h1>
+                <p className="mt-4 max-w-lg text-[15px] leading-7 text-ink/64 sm:text-lg sm:leading-8">
+                  {copy.home.description}
+                </p>
+
+                <div className="mt-6 flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap">
+                  <Link
+                    href="/upload"
+                    className="inline-flex items-center justify-center rounded-full bg-pine px-6 py-3 font-medium text-white transition hover:bg-pine/90"
+                  >
+                    {copy.home.primaryCta}
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white/88 px-6 py-3 font-medium text-ink transition hover:border-black/20"
+                  >
+                    {copy.home.secondaryCta}
+                  </Link>
+                </div>
+
+                <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                  {plans.map((marketingPlan) => (
+                    <div
+                      key={marketingPlan.name}
+                      className={
+                        marketingPlan.featured
+                          ? "rounded-[1.35rem] border border-pine/18 bg-pine px-4 py-4 text-white"
+                          : "rounded-[1.35rem] border border-black/5 bg-white/74 px-4 py-4"
+                      }
+                    >
+                      <p
+                        className={
+                          marketingPlan.featured
+                            ? "text-[11px] uppercase tracking-[0.22em] text-white/60"
+                            : "text-[11px] uppercase tracking-[0.22em] text-ink/42"
+                        }
+                      >
+                        {marketingPlan.name}
+                      </p>
+                      <p className={marketingPlan.featured ? "mt-2 text-2xl font-semibold text-white" : "mt-2 text-2xl font-semibold text-ink"}>
+                        {marketingPlan.priceLabel}
+                      </p>
+                      <p className={marketingPlan.featured ? "mt-2 text-sm leading-6 text-white/72" : "mt-2 text-sm leading-6 text-ink/60"}>
+                        {marketingPlan.features[0]}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="mt-7 text-sm leading-6 text-ink/56">
+                  {copy.home.trust}
+                </p>
+                <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink/42 sm:text-xs sm:tracking-[0.24em]">
+                  {copy.home.fomo}
+                </p>
               </div>
             </div>
-          </div>
-
-          <div className="order-2 mx-auto max-w-xl lg:pl-6 xl:pl-10">
-            <div className="inline-flex rounded-full border border-black/6 bg-white/82 px-3 py-1.5 text-xs text-ink/68 shadow-sm backdrop-blur sm:px-4 sm:py-2 sm:text-sm">
-              {copy.home.badge}
-            </div>
-            <h1 className="mt-5 max-w-[12ch] text-[2.65rem] font-semibold tracking-[-0.06em] text-ink sm:text-5xl lg:text-6xl xl:text-[4.1rem] xl:leading-[0.95]">
-              {copy.home.title}
-            </h1>
-            <p className="mt-4 max-w-lg text-[15px] leading-7 text-ink/64 sm:text-lg sm:leading-8">
-              {copy.home.description}
-            </p>
-            <div className="mt-6 flex flex-col gap-3 text-sm sm:mt-8 sm:flex-row sm:flex-wrap">
-              <Link
-                href="/upload"
-                className="inline-flex items-center justify-center rounded-full bg-pine px-6 py-3 font-medium text-white transition hover:bg-pine/90"
-              >
-                {copy.home.primaryCta}
-              </Link>
-              <Link
-                href="/signup"
-                className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white/88 px-6 py-3 font-medium text-ink transition hover:border-black/20"
-              >
-                {copy.home.secondaryCta}
-              </Link>
-            </div>
-
-            <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              {plans.map((marketingPlan) => (
-                <div
-                  key={marketingPlan.name}
-                  className={
-                    marketingPlan.featured
-                      ? "rounded-[1.35rem] border border-pine/18 bg-pine px-4 py-4 text-white"
-                      : "rounded-[1.35rem] border border-black/5 bg-white/74 px-4 py-4"
-                  }
-                >
-                  <p
-                    className={
-                      marketingPlan.featured
-                        ? "text-[11px] uppercase tracking-[0.22em] text-white/60"
-                        : "text-[11px] uppercase tracking-[0.22em] text-ink/42"
-                    }
-                  >
-                    {marketingPlan.name}
-                  </p>
-                  <p className={marketingPlan.featured ? "mt-2 text-2xl font-semibold text-white" : "mt-2 text-2xl font-semibold text-ink"}>
-                    {marketingPlan.priceLabel}
-                  </p>
-                  <p className={marketingPlan.featured ? "mt-2 text-sm leading-6 text-white/72" : "mt-2 text-sm leading-6 text-ink/60"}>
-                    {marketingPlan.features[0]}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <p className="mt-7 text-sm leading-6 text-ink/56">
-              {copy.home.trust}
-            </p>
-            <p className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink/42 sm:text-xs sm:tracking-[0.24em]">
-              {copy.home.fomo}
-            </p>
           </div>
         </div>
       </section>
