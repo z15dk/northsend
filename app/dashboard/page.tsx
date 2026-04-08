@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 
 export default async function DashboardPage() {
@@ -15,6 +16,20 @@ export default async function DashboardPage() {
             Your account is live. The next implementation step is to connect real transfers, storage,
             and plan-based limits directly to this view.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/settings/branding"
+              className="inline-flex items-center justify-center rounded-full bg-pine px-5 py-3 text-sm font-medium text-white transition hover:bg-pine/90"
+            >
+              Hero editor
+            </Link>
+            <Link
+              href="/upload"
+              className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium text-ink transition hover:border-pine/30"
+            >
+              Upload filer
+            </Link>
+          </div>
         </div>
         <div className="rounded-[2rem] border border-black/5 bg-sand p-8">
           <p className="text-sm uppercase tracking-[0.2em] text-ink/50">Current account</p>
