@@ -35,7 +35,10 @@ export async function GET(
     return NextResponse.json({ error: "File not found." }, { status: 404 });
   }
 
-  const downloadUrl = await createSignedDownloadUrl(file.storageKey);
+  const downloadUrl = await createSignedDownloadUrl({
+    key: file.storageKey,
+    fileName: file.originalName,
+  });
 
   await prisma.transfer.update({
     where: { id: transfer.id },

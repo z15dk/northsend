@@ -46,10 +46,20 @@ export async function createSignedUploadUrl({
   return getSignedUrl(getStorageClient(), command, { expiresIn: 60 * 10 });
 }
 
-export async function createSignedDownloadUrl(key: string) {
+export async function createSignedDownloadUrl({
+  key,
+  fileName,
+}: {
+  key: string;
+  fileName?: string;
+}) {
+  const fallbackName = fileName || key.split("/").pop() || "download";
+  const safeFileName = fallbackName.replace(/"/g, "");
+  const encodedName = encodeURIComponent(safeFileName);
   const command = new GetObjectCommand({
     Bucket: getStorageBucket(),
     Key: key,
+    ResponseContentDisposition: `attachment; filename="${safeFileName}"; filename*=UTF-8''${encodedName}`,
   });
 
   return getSignedUrl(getStorageClient(), command, { expiresIn: 60 * 10 });
