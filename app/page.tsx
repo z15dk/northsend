@@ -73,8 +73,8 @@ export default async function HomePage() {
           </div>
 
           <div className="relative flex min-h-[calc(100vh-7rem)] flex-col justify-end p-4 pt-10 sm:p-6 sm:pt-14 lg:min-h-[calc(100vh-9rem)] lg:p-10">
-            <div className="grid items-end gap-8 xl:grid-cols-[360px_1fr] xl:gap-12">
-              <div className="order-2 w-full max-w-sm xl:order-1">
+            <div className="grid items-end gap-8 xl:grid-cols-[420px_1fr] xl:gap-14">
+              <div className="order-2 w-full max-w-[26rem] xl:order-1">
                 <UploadPreview
                   currentPlanName={plan.name}
                   currentPlanLimit={formatBytes(plan.uploadLimitBytes)}

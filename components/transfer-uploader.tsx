@@ -324,7 +324,7 @@ export function TransferUploader({
       <div
         className={cn(
           "relative rounded-[2rem] border border-black/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(247,243,235,0.92)_100%)]",
-          isHero ? "p-4 sm:p-6 md:p-8" : "p-4 sm:p-6",
+          isHero ? "p-4 sm:p-5 md:p-6" : "p-4 sm:p-6",
         )}
       >
         {isHero ? (
@@ -337,13 +337,13 @@ export function TransferUploader({
 
             <label
               htmlFor={`files-${variant}`}
-              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-5 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-6 sm:py-6"
+              className="block cursor-pointer rounded-[1.6rem] border border-dashed border-pine/25 bg-white/82 px-4 py-5 transition hover:border-pine/35 hover:bg-white sm:rounded-[2rem] sm:px-5 sm:py-5"
             >
               <p className="text-xs uppercase tracking-[0.2em] text-pine sm:text-sm sm:tracking-[0.24em]">{copy.uploadZone}</p>
-              <h3 className="mt-3 max-w-[9ch] text-[2.7rem] font-semibold leading-[0.92] tracking-tight text-ink sm:max-w-[10ch] sm:text-[2.95rem] md:text-[3.1rem]">
+              <h3 className="mt-3 max-w-[11ch] text-[2.5rem] font-semibold leading-[0.9] tracking-tight text-ink sm:max-w-none sm:text-[2.85rem] md:text-[3rem]">
                 {copy.title}
               </h3>
-              <p className="mt-3 max-w-sm text-sm leading-6 text-ink/65">
+              <p className="mt-3 max-w-md text-sm leading-6 text-ink/65">
                 {copy.description}
               </p>
 
@@ -355,7 +355,7 @@ export function TransferUploader({
                 onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
               />
 
-              <div className="mt-5 flex flex-col gap-4 border-t border-black/6 pt-4 sm:mt-6 sm:pt-4">
+              <div className="mt-5 flex flex-col gap-3.5 border-t border-black/6 pt-4 sm:mt-5 sm:pt-4">
                 {files.length > 0 ? (
                   <div className="rounded-2xl bg-cloud/70 px-4 py-3 text-sm text-ink/72">
                     <p className="font-medium text-ink">{copy.selectedFiles(files.length)}</p>
@@ -371,7 +371,7 @@ export function TransferUploader({
                   </p>
                 )}
 
-                <p className="text-sm leading-6 text-ink/62">
+                <p className="max-w-sm text-sm leading-6 text-ink/62">
                   {locale === "da"
                     ? "Opret en gratis bruger og send op til 15 GB gratis."
                     : "Create a free account and send up to 15 GB for free."}
