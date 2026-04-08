@@ -53,8 +53,5 @@ export async function GET(
     },
   });
 
-  return NextResponse.json({
-    url: downloadUrl,
-    name: file.originalName,
-  });
+  return NextResponse.redirect(downloadUrl);
 }
