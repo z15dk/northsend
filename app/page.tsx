@@ -12,18 +12,6 @@ export default async function HomePage() {
   const copy = t(locale);
   const plan = getPlanDefinition(user?.planCode);
   const plans = getMarketingPlans(locale);
-  const heroTitle =
-    locale === "da"
-      ? "Upload filer med det samme. Gør resten til et køb bagefter."
-      : "Upload files right away. Turn the rest into an upgrade later.";
-  const heroDescription =
-    locale === "da"
-      ? "NorthSend gør filoverførsler enkle for brugeren og stærke for virksomheden. Gratis brugere kommer hurtigt i gang. Betalende kunder får tracking, længere lagring og en mere professionel levering."
-      : "NorthSend makes file transfers simple for the sender and stronger for the business. Free users get started fast. Paying customers unlock tracking, longer storage, and a more professional delivery flow.";
-  const supportingLine =
-    locale === "da"
-      ? "Upload først. Forklar værdien, når folk allerede er i gang."
-      : "Upload first. Explain the value once people are already moving.";
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-24 px-4 py-6 sm:px-6 md:py-10">
@@ -48,10 +36,10 @@ export default async function HomePage() {
               {copy.home.badge}
             </div>
             <h1 className="mt-6 max-w-[11ch] text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl lg:text-6xl xl:text-[4.1rem] xl:leading-[0.95]">
-              {heroTitle}
+              {copy.home.title}
             </h1>
             <p className="mt-5 max-w-lg text-base leading-7 text-ink/64 sm:text-lg sm:leading-8">
-              {heroDescription}
+              {copy.home.description}
             </p>
             <div className="mt-8 flex flex-wrap gap-3 text-sm">
               <Link
@@ -97,8 +85,11 @@ export default async function HomePage() {
               ))}
             </div>
 
-            <p className="mt-8 text-sm uppercase tracking-[0.24em] text-ink/42">
-              {supportingLine}
+            <p className="mt-8 text-sm text-ink/56">
+              {copy.home.trust}
+            </p>
+            <p className="mt-4 text-xs uppercase tracking-[0.24em] text-ink/42">
+              {copy.home.fomo}
             </p>
           </div>
         </div>
@@ -170,6 +161,28 @@ export default async function HomePage() {
         >
           {copy.home.whiteLabelCta}
         </Link>
+      </section>
+
+      <section className="rounded-[2.8rem] border border-black/5 bg-white/82 px-8 py-10 shadow-card md:px-10 md:py-12">
+        <div className="max-w-3xl">
+          <p className="text-sm uppercase tracking-[0.2em] text-pine">
+            {locale === "da" ? "Klar til at starte" : "Ready to start"}
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
+            {copy.home.bottomCtaTitle}
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-ink/70">
+            {copy.home.bottomCtaDescription}
+          </p>
+          <div className="mt-8">
+            <Link
+              href="/upload"
+              className="inline-flex rounded-full bg-pine px-6 py-3 text-sm font-medium text-white transition hover:bg-pine/90"
+            >
+              {copy.home.bottomCtaButton}
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
   );

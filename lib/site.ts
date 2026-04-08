@@ -21,7 +21,7 @@ export function getMarketingPlans(locale: Locale): MarketingPlan[] {
       {
         name: "Gratis",
         priceLabel: "0 kr/md",
-        kicker: "Gør det let at komme i gang og få flere oprettelser.",
+        kicker: "Perfekt til hurtige uploads og deling.",
         features: [
           "Send op til 15 GB pr. fil",
           "3 dages lagring",
@@ -31,7 +31,7 @@ export function getMarketingPlans(locale: Locale): MarketingPlan[] {
       {
         name: "Pro Light",
         priceLabel: "149 kr/md",
-        kicker: "Til mindre teams der vil dele større filer professionelt.",
+        kicker: "Til dig der vil dele filer mere professionelt.",
         featured: true,
         features: [
           "150 GB storage",
@@ -43,14 +43,14 @@ export function getMarketingPlans(locale: Locale): MarketingPlan[] {
       {
         name: "Pro",
         priceLabel: "249 kr/md",
-        kicker: "Til virksomheder der vil følge downloads og levere bedre kundeoplevelser.",
+        kicker: "Til dig der arbejder med filer hver dag og vil have fuld kontrol.",
         features: [
           "500 GB storage",
           "Fair use trafik",
           "30 dages lagring",
           "Download tracking",
-          "Preview af billeder og PDF",
-          "Notifikationer",
+          "Preview (billeder + PDF)",
+          "Notifikationer ved download",
         ],
       },
     ];
@@ -60,7 +60,7 @@ export function getMarketingPlans(locale: Locale): MarketingPlan[] {
     {
       name: "Free",
       priceLabel: "0 kr/mo",
-      kicker: "Built to remove friction and convert more signups.",
+      kicker: "Perfect for quick uploads and simple sharing.",
       features: [
         "Send up to 15 GB per file",
         "3 days of storage",
@@ -70,7 +70,7 @@ export function getMarketingPlans(locale: Locale): MarketingPlan[] {
     {
       name: "Pro Light",
       priceLabel: "149 kr/mo",
-      kicker: "For smaller teams that want a more professional file flow.",
+      kicker: "For people who want to share files more professionally.",
       featured: true,
       features: [
         "150 GB storage",
@@ -82,14 +82,14 @@ export function getMarketingPlans(locale: Locale): MarketingPlan[] {
     {
       name: "Pro",
       priceLabel: "249 kr/mo",
-      kicker: "For businesses that want tracking, previews, and a stronger delivery experience.",
+      kicker: "For people who work with files every day and want full control.",
       features: [
         "500 GB storage",
         "Fair use traffic",
         "30 days of storage",
         "Download tracking",
-        "Image and PDF preview",
-        "Notifications",
+        "Preview (images + PDF)",
+        "Download notifications",
       ],
     },
   ];
